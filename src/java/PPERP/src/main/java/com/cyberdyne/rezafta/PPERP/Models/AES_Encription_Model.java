@@ -1,12 +1,12 @@
 package com.cyberdyne.rezafta.PPERP.Models;
 
-public class Encription_Model
+public class AES_Encription_Model
 {
 
     String Key;
     String Value;
 
-    public Encription_Model(String value,String key)
+    public AES_Encription_Model(String value, String key)
     {
         Key = key;
         Value = value;

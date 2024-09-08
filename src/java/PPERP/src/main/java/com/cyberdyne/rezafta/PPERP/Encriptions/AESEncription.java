@@ -1,6 +1,6 @@
 package com.cyberdyne.rezafta.PPERP.Encriptions;
 
-import com.cyberdyne.rezafta.PPERP.Models.Encription_Model;
+import com.cyberdyne.rezafta.PPERP.Models.AES_Encription_Model;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -31,7 +31,7 @@ public class AESEncription
     //Get generate key function end
 
     //Get encrption function start
-    public Encription_Model Encription(String Value) throws Exception
+    public AES_Encription_Model Encription(String Value) throws Exception
     {
         String result="";
         String plainText = Value;
@@ -51,7 +51,7 @@ public class AESEncription
         byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
         result = Base64.getEncoder().encodeToString(encryptedBytes);
 
-        return new Encription_Model(result,secretKey);
+        return new AES_Encription_Model(result,secretKey);
     }
     //Get encrption function end
 
