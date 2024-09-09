@@ -38,7 +38,7 @@ public class AESEncription
         String secretKey = GenerateKey(); // Replace with your own secret key
         //key length to 16, 24, or 32 bytes
 
-        System.out.println(secretKey);
+//        System.out.println(secretKey);
 
         // Create AES key from the secret key
         SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "AES");

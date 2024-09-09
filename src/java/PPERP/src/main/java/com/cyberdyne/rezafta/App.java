@@ -2,8 +2,13 @@ package com.cyberdyne.rezafta;
 
 import com.cyberdyne.rezafta.PPERP.Encriptions.DESEncription;
 import com.cyberdyne.rezafta.PPERP.Encriptions.ECCEncription;
+import com.cyberdyne.rezafta.PPERP.Encriptions.RSAEncription;
+import com.cyberdyne.rezafta.PPERP.Models.AES_Encription_Model;
 import com.cyberdyne.rezafta.PPERP.Models.DES_Encription_Model;
 import com.cyberdyne.rezafta.PPERP.Models.ECC_Encription_Model;
+import com.cyberdyne.rezafta.PPERP.Models.RSA_Encription_Model;
+import com.cyberdyne.rezafta.PPERP.PPERP;
+import com.cyberdyne.rezafta.PPERP.Types.EncriptionTypes;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
@@ -23,6 +28,15 @@ public class App
     //Main function start
     public static void main( String[] args ) throws Exception
     {
+
+        PPERP pp = new PPERP();
+
+        Object mo = pp.GetEncription("Hello wolrd",EncriptionTypes.RSA);
+        RSA_Encription_Model d = (RSA_Encription_Model) mo;
+        System.out.println(d.getValue());
+
+        String result =pp.GetDecription(d.getValue(),d.getKey(),EncriptionTypes.RSA);
+        System.out.println(result);
 
     }
     //Main function end

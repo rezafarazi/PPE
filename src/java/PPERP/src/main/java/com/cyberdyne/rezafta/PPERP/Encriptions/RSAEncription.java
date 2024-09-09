@@ -8,6 +8,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Base64;
 
@@ -75,13 +76,13 @@ public class RSAEncription
         // Decode the Base64-encoded encrypted data
         byte[] encryptedBytes = Base64.getDecoder().decode(Value);
 
-        // Initialize a Cipher for decryption
-        Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
+        // Initialize a Cipher for decryption with the correct padding scheme
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
         // Decrypt the data
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-        return new String(decryptedBytes);
+        return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
     //Get decrption function end
 
