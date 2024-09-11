@@ -1,12 +1,12 @@
 package com.cyberdyne.rezafta.PPERP.Models;
 
-public class ECC_Encription_Model
+public class TimeBase_Encription_Model
 {
 
     String Key;
     String Value;
 
-    public ECC_Encription_Model(String value, String key)
+    public TimeBase_Encription_Model(String value, String key)
     {
         Key = key;
         Value = value;

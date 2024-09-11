@@ -3,6 +3,7 @@ package com.cyberdyne.rezafta.PPERP;
 import com.cyberdyne.rezafta.PPERP.Encriptions.AESEncription;
 import com.cyberdyne.rezafta.PPERP.Encriptions.DESEncription;
 import com.cyberdyne.rezafta.PPERP.Encriptions.RSAEncription;
+import com.cyberdyne.rezafta.PPERP.Encriptions.TimeBaseEncription;
 import com.cyberdyne.rezafta.PPERP.Models.AES_Encription_Model;
 import com.cyberdyne.rezafta.PPERP.Types.EncriptionTypes;
 
@@ -13,6 +14,7 @@ public class PPERP
     private static RSAEncription RSA=new RSAEncription();
     private static AESEncription AES=new AESEncription();
     private static DESEncription DES=new DESEncription();
+    private static TimeBaseEncription TimeBase=new TimeBaseEncription();
 
 
     //Get enciprion function start
@@ -26,6 +28,8 @@ public class PPERP
                 return RSA.Encription(value);
             case DES:
                 return DES.Encription(value);
+            case TIMEBASE:
+                return TimeBase.Encription(value);
         }
 
         throw new Exception("Type not working yet");
@@ -48,6 +52,9 @@ public class PPERP
                 break;
             case DES:
                 result = DES.Decription(value,key);
+                break;
+            case TIMEBASE:
+                result = TimeBase.Decription(value,key);
                 break;
         }
 

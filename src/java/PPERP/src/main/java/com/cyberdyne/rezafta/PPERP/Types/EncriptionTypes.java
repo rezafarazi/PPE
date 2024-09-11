@@ -5,5 +5,5 @@ public enum EncriptionTypes
     DES,
     AES,
     RSA,
-    ECC
+    TIMEBASE
 }

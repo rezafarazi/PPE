@@ -1,5 +1,6 @@
 package com.cyberdyne.rezafta.PPERP.Encriptions;
 
+import com.cyberdyne.rezafta.PPERP.Functions.KeyConvertor.KeyConvertor;
 import com.cyberdyne.rezafta.PPERP.Models.AES_Encription_Model;
 import com.cyberdyne.rezafta.PPERP.Models.DES_Encription_Model;
 
@@ -33,7 +34,7 @@ public class DESEncription
 
         return new DES_Encription_Model(
             Base64.getEncoder().encodeToString(encryptedBytes),
-            secretKeyToString(key)
+            KeyConvertor.secretKeyToString(key)
         );
     }
     //Get encrption function end
@@ -42,25 +43,10 @@ public class DESEncription
     public String Decription(String Value,String Key) throws Exception
     {
         Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, stringToSecretKey(Key));
+        cipher.init(Cipher.DECRYPT_MODE, KeyConvertor.stringToSecretKey(Key,"DES"));
         byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(Value));
         return new String(decryptedBytes);
     }
     //Get decrption function end
-
-
-    // Method to convert a string to a SecretKey
-    private SecretKey stringToSecretKey(String encodedKey)
-    {
-        byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
-        return new SecretKeySpec(decodedKey, 0, decodedKey.length, "DES");
-    }
-
-    // Method to convert a SecretKey to a string
-    private String secretKeyToString(SecretKey secretKey)
-    {
-        byte[] encodedKey = secretKey.getEncoded();
-        return Base64.getEncoder().encodeToString(encodedKey);
-    }
 
 }

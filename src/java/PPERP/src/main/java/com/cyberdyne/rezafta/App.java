@@ -1,45 +1,34 @@
 package com.cyberdyne.rezafta;
 
-import com.cyberdyne.rezafta.PPERP.Encriptions.DESEncription;
-import com.cyberdyne.rezafta.PPERP.Encriptions.ECCEncription;
-import com.cyberdyne.rezafta.PPERP.Encriptions.RSAEncription;
-import com.cyberdyne.rezafta.PPERP.Models.AES_Encription_Model;
-import com.cyberdyne.rezafta.PPERP.Models.DES_Encription_Model;
-import com.cyberdyne.rezafta.PPERP.Models.ECC_Encription_Model;
 import com.cyberdyne.rezafta.PPERP.Models.RSA_Encription_Model;
+import com.cyberdyne.rezafta.PPERP.Models.TimeBase_Encription_Model;
 import com.cyberdyne.rezafta.PPERP.PPERP;
 import com.cyberdyne.rezafta.PPERP.Types.EncriptionTypes;
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jce.spec.ECParameterSpec;
-import org.bouncycastle.jce.spec.IESParameterSpec;
-import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.util.encoders.Hex;
 
-import java.security.*;
-import java.security.spec.ECGenParameterSpec;
-import java.util.Base64;
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 public class App
 {
 
-
     //Main function start
     public static void main( String[] args ) throws Exception
     {
+        for(int i=0;i<10;i++) {
+            PPERP pp = new PPERP();
 
-        PPERP pp = new PPERP();
+            Object mo = pp.GetEncription("Hello wolrd", EncriptionTypes.TIMEBASE);
+            TimeBase_Encription_Model d = (TimeBase_Encription_Model) mo;
+            System.out.println(d.getValue());
 
-        Object mo = pp.GetEncription("Hello wolrd",EncriptionTypes.RSA);
-        RSA_Encription_Model d = (RSA_Encription_Model) mo;
-        System.out.println(d.getValue());
-
-        String result =pp.GetDecription(d.getValue(),d.getKey(),EncriptionTypes.RSA);
-        System.out.println(result);
-
+            String result = pp.GetDecription(d.getValue(), d.getKey(), EncriptionTypes.TIMEBASE);
+            System.out.println(result);
+        }
     }
     //Main function end
-
 
 }
