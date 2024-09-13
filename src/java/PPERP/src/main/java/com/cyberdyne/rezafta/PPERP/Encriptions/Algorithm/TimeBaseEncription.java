@@ -1,26 +1,29 @@
-package com.cyberdyne.rezafta.PPERP.Encriptions;
+package com.cyberdyne.rezafta.PPERP.Encriptions.Algorithm;
 
+import com.cyberdyne.rezafta.PPERP.Functions.KeyConvertor.KeyConvertor;
 import com.cyberdyne.rezafta.PPERP.Models.AES_Encription_Model;
+import com.cyberdyne.rezafta.PPERP.Models.TimeBase_Encription_Model;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.sql.Time;
 import java.util.Base64;
 
-public class AESEncription
-{
+public class TimeBaseEncription {
 
     //Get generate key function start
-    private String GenerateKey() throws Exception
+    private String GenerateKey(long time) throws Exception
     {
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-        keyGen.init(128, SecureRandom.getInstanceStrong());
-        SecretKey aesKey = keyGen.generateKey();
+        byte[] keyBytes = new byte[16];
+        SecureRandom random = new SecureRandom();
+        random.setSeed(time);
+        random.nextBytes(keyBytes);
 
         // Convert the key to a hexadecimal string
-        byte[] keyBytes = aesKey.getEncoded();
         StringBuilder hexString = new StringBuilder();
         for (byte b : keyBytes) {
             hexString.append(String.format("%02X", b));
@@ -31,11 +34,13 @@ public class AESEncription
     //Get generate key function end
 
     //Get encrption function start
-    public AES_Encription_Model Encription(String Value) throws Exception
-    {
+    public TimeBase_Encription_Model Encription(String Value) throws Exception {
+        //Get time
+        long currentTime = System.currentTimeMillis();
+
         String result="";
         String plainText = Value;
-        String secretKey = GenerateKey(); // Replace with your own secret key
+        String secretKey = GenerateKey(currentTime); // Replace with your own secret key
         //key length to 16, 24, or 32 bytes
 
 //        System.out.println(secretKey);
@@ -51,12 +56,12 @@ public class AESEncription
         byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
         result = Base64.getEncoder().encodeToString(encryptedBytes);
 
-        return new AES_Encription_Model(result,secretKey);
+        return new TimeBase_Encription_Model(result,secretKey);
     }
     //Get encrption function end
 
     //Get decrption function start
-    public String Decription(String Value,String Key) throws Exception
+    public String Decription(String Value, String Key) throws Exception
     {
         String secretKey = Key; // Replace with your own secret key
         //key length to 16, 24, or 32 bytes
@@ -77,3 +82,4 @@ public class AESEncription
     //Get decrption function end
 
 }
+

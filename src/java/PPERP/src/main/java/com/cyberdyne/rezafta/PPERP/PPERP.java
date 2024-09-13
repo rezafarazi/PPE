@@ -1,10 +1,9 @@
 package com.cyberdyne.rezafta.PPERP;
 
-import com.cyberdyne.rezafta.PPERP.Encriptions.AESEncription;
-import com.cyberdyne.rezafta.PPERP.Encriptions.DESEncription;
-import com.cyberdyne.rezafta.PPERP.Encriptions.RSAEncription;
-import com.cyberdyne.rezafta.PPERP.Encriptions.TimeBaseEncription;
-import com.cyberdyne.rezafta.PPERP.Models.AES_Encription_Model;
+import com.cyberdyne.rezafta.PPERP.Encriptions.Algorithm.AESEncription;
+import com.cyberdyne.rezafta.PPERP.Encriptions.Algorithm.DESEncription;
+import com.cyberdyne.rezafta.PPERP.Encriptions.Algorithm.RSAEncription;
+import com.cyberdyne.rezafta.PPERP.Encriptions.Algorithm.TimeBaseEncription;
 import com.cyberdyne.rezafta.PPERP.Types.EncriptionTypes;
 
 public class PPERP

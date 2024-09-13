@@ -1,4 +1,4 @@
-package com.cyberdyne.rezafta.PPERP.Encriptions;
+package com.cyberdyne.rezafta.PPERP.Encriptions.Algorithm;
 
 import com.cyberdyne.rezafta.PPERP.Functions.KeyConvertor.KeyConvertor;
 import com.cyberdyne.rezafta.PPERP.Models.AES_Encription_Model;

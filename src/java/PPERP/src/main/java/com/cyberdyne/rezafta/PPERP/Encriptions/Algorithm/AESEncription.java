@@ -1,29 +1,27 @@
-package com.cyberdyne.rezafta.PPERP.Encriptions;
+package com.cyberdyne.rezafta.PPERP.Encriptions.Algorithm;
 
 import com.cyberdyne.rezafta.PPERP.Functions.KeyConvertor.KeyConvertor;
 import com.cyberdyne.rezafta.PPERP.Models.AES_Encription_Model;
-import com.cyberdyne.rezafta.PPERP.Models.TimeBase_Encription_Model;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.sql.Time;
 import java.util.Base64;
 
-public class TimeBaseEncription {
+public class AESEncription
+{
 
-    //Get generate key function start
-    private String GenerateKey(long time) throws Exception
+    //Get default generate key function start
+    private String GenerateKey() throws Exception
     {
-        byte[] keyBytes = new byte[16];
-        SecureRandom random = new SecureRandom();
-        random.setSeed(time);
-        random.nextBytes(keyBytes);
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        keyGen.init(128, SecureRandom.getInstanceStrong());
+        SecretKey aesKey = keyGen.generateKey();
 
         // Convert the key to a hexadecimal string
+        byte[] keyBytes = aesKey.getEncoded();
         StringBuilder hexString = new StringBuilder();
         for (byte b : keyBytes) {
             hexString.append(String.format("%02X", b));
@@ -31,19 +29,20 @@ public class TimeBaseEncription {
 
         return hexString.toString().substring(0,16);
     }
-    //Get generate key function end
+    //Get default generate key function end
 
     //Get encrption function start
-    public TimeBase_Encription_Model Encription(String Value) throws Exception {
-        //Get time
-        long currentTime = System.currentTimeMillis();
-
+    public AES_Encription_Model Encription(String Value) throws Exception
+    {
         String result="";
         String plainText = Value;
-        String secretKey = GenerateKey(currentTime); // Replace with your own secret key
-        //key length to 16, 24, or 32 bytes
 
-//        System.out.println(secretKey);
+
+        //Get genearte key by default method
+        String secretKey = GenerateKey();
+
+        //Get generate key by timestep
+//        String secretKey = new String(Base64.getDecoder().decode(com.cyberdyne.rezafta.PPERP.Encriptions.Key.KeyGenerator.GetCurrentTimeKey("GMT+03:30").getBytes()));
 
         // Create AES key from the secret key
         SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
@@ -56,15 +55,15 @@ public class TimeBaseEncription {
         byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
         result = Base64.getEncoder().encodeToString(encryptedBytes);
 
-        return new TimeBase_Encription_Model(result,secretKey);
+        return new AES_Encription_Model(result,secretKey);
     }
     //Get encrption function end
 
     //Get decrption function start
-    public String Decription(String Value, String Key) throws Exception
+    public String Decription(String Value,String Key) throws Exception
     {
-        String secretKey = Key; // Replace with your own secret key
-        //key length to 16, 24, or 32 bytes
+        String secretKey = Key;
+        //String secretKey = new String(Base64.getDecoder().decode(com.cyberdyne.rezafta.PPERP.Encriptions.Key.KeyGenerator.GetCurrentTimeKey("GMT+03:30").getBytes()));
 
         // Create AES key from the secret key
         SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
@@ -82,4 +81,3 @@ public class TimeBaseEncription {
     //Get decrption function end
 
 }
-
