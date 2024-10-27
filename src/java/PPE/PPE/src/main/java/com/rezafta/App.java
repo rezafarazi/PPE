@@ -13,13 +13,11 @@ public class App
     {
 
         PPE p=new PPE();
-        String result=p.GetEncription("Hello world", "Asia/Tehran",EncriptionTypes.AES);
-
-        String results=p.GetDecription(result,"Asia/Tehran",EncriptionTypes.AES);
-
+        String result=p.GetEncription("salam", "reza",EncriptionTypes.AES);
         System.out.println("En last is : "+result);
-        System.out.println("De last is : "+results);
 
+        String results=p.GetDecription(result,"reza",EncriptionTypes.AES);
+        System.out.println("De last is : "+results);
 
     }
 

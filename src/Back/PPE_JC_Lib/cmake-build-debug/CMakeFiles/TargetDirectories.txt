@@ -1,0 +1,3 @@
+C:/Users/rezafta/Desktop/PPERP/src/Back/PPE_JC_Lib/cmake-build-debug/CMakeFiles/PPE_JC_Lib.dir
+C:/Users/rezafta/Desktop/PPERP/src/Back/PPE_JC_Lib/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/rezafta/Desktop/PPERP/src/Back/PPE_JC_Lib/cmake-build-debug/CMakeFiles/rebuild_cache.dir

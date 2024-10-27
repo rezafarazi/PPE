@@ -1,0 +1,3 @@
+g++ -shared -o PPE.dll PPE.cpp -DBUILD_DLL
+
+g++ -shared -o PPE.dll PPE.cpp -DBUILD_DLL -Wall -Wno-error

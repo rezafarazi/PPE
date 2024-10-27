@@ -1,0 +1,13 @@
+﻿  PPE.cpp
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(29,27): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(30,27): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(31,27): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(32,27): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(93,16): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(101,16): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(109,16): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(117,16): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(125,16): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(133,16): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\PPE\PPE.cpp(208,1): warning C4172: returning address of local variable or temporary: enc
+  PPE.vcxproj -> C:\Users\rezafta\Desktop\PPERP\src\cpp\PPE\PPE\x64\Debug\PPE.exe

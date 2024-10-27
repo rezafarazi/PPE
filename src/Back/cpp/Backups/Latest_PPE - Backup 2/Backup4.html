@@ -1,0 +1,432 @@
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <vector>
+#include <sstream>
+#include <iomanip>
+#include <string.h>
+#include <windows.h>
+#include "AES.h"
+
+using namespace std;
+
+/********************Functions start**********************/
+
+std::string dequeToString(const std::deque<Byte>& deq) {
+    return std::string(deq.begin(), deq.end());
+}
+
+
+std::string stringToHex(const std::string& input) {
+    std::stringstream ss;
+    ss << std::hex << std::setfill('0');
+    for (const auto &c: input) {
+        ss << std::setw(2) << static_cast<int>(static_cast<unsigned char>(c));
+    }
+    return ss.str();
+}
+
+
+std::string hexToString(const std::string& hex) {
+    std::string result;
+    std::stringstream ss(hex);
+    std::string temp;
+
+    while (ss >> std::setw(2) >> temp) {
+        unsigned char ch = std::stoi(temp, nullptr, 16);
+        result += ch;
+    }
+
+    return result;
+}
+
+/********************Functions end**********************/
+
+
+/********************Generate Key start**********************/
+static const std::string base64_chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789+/";
+
+static const unsigned char b64_table[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+// Function to decode Base64 and return as std::string
+std::string base64_decode_to_string(const std::string& input) {
+    const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    size_t input_len = input.length();
+    std::vector<uint8_t> output;
+
+    for (size_t i = 0; i < input_len; i += 4) {
+        uint32_t block = 0;
+        for (int j = 0; j < 4; ++j) {
+            char c = input[i + j];
+            if (c == '=')
+                break;
+            auto pos = base64_chars.find(c);
+            if (pos != std::string::npos)
+                block = (block << 6) | static_cast<uint32_t>(pos);
+        }
+
+        output.push_back((block >> 16) & 0xFF);
+        if (input[i + 2] != '=')
+            output.push_back((block >> 8) & 0xFF);
+        if (input[i + 3] != '=')
+            output.push_back(block & 0xFF);
+    }
+
+    return std::string(output.begin(), output.end());
+}
+
+unsigned char* base64_decode(const char* data, size_t input_length, size_t* output_length) {
+    if (input_length % 4 != 0) return NULL;
+
+    *output_length = input_length / 4 * 3;
+    if (data[input_length - 1] == '=') (*output_length)--;
+    if (data[input_length - 2] == '=') (*output_length)--;
+
+    unsigned char* decoded_data = (unsigned char*)malloc(*output_length + 1); // Explicit cast to unsigned char*
+    if (decoded_data == NULL) return NULL;
+
+    for (size_t i = 0, j = 0; i < input_length;) {
+        uint32_t sextet_a = data[i] == '=' ? 0 & i++ : strchr((const char*)b64_table, data[i++]) - (const char*)b64_table;
+        uint32_t sextet_b = data[i] == '=' ? 0 & i++ : strchr((const char*)b64_table, data[i++]) - (const char*)b64_table;
+        uint32_t sextet_c = data[i] == '=' ? 0 & i++ : strchr((const char*)b64_table, data[i++]) - (const char*)b64_table;
+        uint32_t sextet_d = data[i] == '=' ? 0 & i++ : strchr((const char*)b64_table, data[i++]) - (const char*)b64_table;
+
+        uint32_t triple = (sextet_a << 3 * 6) + (sextet_b << 2 * 6) + (sextet_c << 1 * 6) + (sextet_d << 0 * 6);
+
+        if (j < *output_length) decoded_data[j++] = (triple >> 2 * 8) & 0xFF;
+        if (j < *output_length) decoded_data[j++] = (triple >> 1 * 8) & 0xFF;
+        if (j < *output_length) decoded_data[j++] = (triple >> 0 * 8) & 0xFF;
+    }
+
+    decoded_data[*output_length] = '\0'; // Null-terminate the string
+    return decoded_data;
+}
+
+std::string base64_encode(const std::string& in)
+{
+    std::string out;
+    int val = 0, valb = -6;
+    for (unsigned char c : in) {
+        val = (val << 8) + c;
+        valb += 8;
+        while (valb >= 0) {
+            out.push_back(base64_chars[(val >> valb) & 0x3F]);
+            valb -= 6;
+        }
+    }
+    if (valb > -6) out.push_back(base64_chars[((val << 8) >> (valb + 8)) & 0x3F]);
+    while (out.size() % 4) out.push_back('=');
+    return out;
+}
+
+size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
+{
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
+
+long GetTimeStep() {
+
+    time_t current_time;
+    struct tm gmt_time;
+    current_time = time(NULL);
+    if (gmtime_s(&gmt_time, &current_time) != 0)
+    {
+        perror("gmtime_s");
+        return 1;
+    }
+    //printf("Current GMT Unix time: %ld\n", (long)current_time);
+
+    return (long)current_time;
+}
+
+std::string GetCurrentTimeKey(const std::string& Slat, bool based)
+{
+    std::string keybase;
+    std::string Key;
+
+    long timestep = GetTimeStep();
+    std::string timestep8 = std::to_string(timestep).substr(0, 8);
+    std::vector<char> timestep8char(timestep8.begin(), timestep8.end());
+
+    keybase = timestep8;
+
+    for (int i = timestep8char.size() - 1; i >= 0; --i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = 0; i < timestep8char.size(); ++i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = timestep8char.size() - 1; i >= 0; --i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = 0; i < timestep8char.size(); ++i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = timestep8char.size() - 1; i >= 0; --i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = 0; i < timestep8char.size(); ++i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = timestep8char.size() - 1; i >= 0; --i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = 0; i < timestep8char.size(); ++i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = timestep8char.size() - 1; i >= 0; --i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = 0; i < timestep8char.size(); ++i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = timestep8char.size() - 1; i >= 0; --i) {
+        keybase += timestep8char[i];
+    }
+
+    for (int i = 0; i < timestep8char.size(); ++i) {
+        keybase += timestep8char[i];
+    }
+
+    std::vector<char> keybasechar(keybase.begin(), keybase.end());
+    for (size_t i = 0; i <= keybasechar.size() / 2; i += 2) {
+        std::string NumA(1, keybasechar[i]);
+        std::string NumB(1, keybasechar[i + 1]);
+
+        int AddNum = std::stoi(NumA + NumB);
+        char KeyChar = static_cast<char>(AddNum);
+        Key += KeyChar;
+    }
+
+    Key += Slat;
+
+    Key = Key.substr(0, 24);
+
+    if (based)
+    {
+        std::string encodedKey = base64_encode(Key);
+        //std::cout << encodedKey;
+        return encodedKey;
+    }
+    else
+    {
+        return Key;
+    }
+}
+/********************Generate Key end**********************/
+
+
+/********************AES start**********************/
+
+std::string GETPPESINGLE(std::string VALUE,std::string KEY,int Mode)
+{
+    if(Mode == 0)
+    {
+        VALUE = base64_decode_to_string(VALUE);
+    }
+
+    string key = stringToHex(KEY);
+    string plain = stringToHex(VALUE);
+    deque<Byte> key_, plain_, out_;
+    bool res;
+
+    AES aes;
+    aes.convertSTRtoVEC(key, key_);
+    aes.convertSTRtoVEC(plain, plain_);
+
+    if(Mode == 1)
+    {
+        res = aes.EncryptECB(plain_, key_, out_);
+        return base64_encode(dequeToString(out_));
+    }
+
+    if(Mode == 0)
+    {
+        res = aes.DecryptECB(plain_ , key_, out_);
+        return dequeToString(out_);
+    }
+
+    return "";
+}
+
+/********************AES end**********************/
+
+
+/********************Other functions start**********************/
+
+std::string TrimString(std::string str) {
+    const std::string whitespace = " \t\n\r\f\v"; // All types of possible spaces
+    // Remove leading whitespace
+    size_t firstNonSpace = str.find_first_not_of(whitespace);
+    str.erase(0, firstNonSpace);
+    // Remove trailing whitespace
+    size_t lastNonSpace = str.find_last_not_of(whitespace);
+    str.erase(lastNonSpace + 1);
+    return str;
+}
+
+std::string convertUnsignedCharToString(const unsigned char* dataToSend, int sendLength) {
+    std::ostringstream convertStream;
+    convertStream << std::hex << std::setfill('0');
+
+    for (int i = 0; i < sendLength; ++i) {
+        convertStream << std::setw(2) << static_cast<short>(dataToSend[i]);
+    }
+
+    return convertStream.str();
+}
+
+std::string RemoveTempsString(std::string str) {
+    std::string result="";
+    int space_count=0;
+    for (int i = 0; i < str.length(); i++)
+    {
+        if(str[i] == ' ')
+        {
+            space_count++;
+            if(space_count>=2)
+            {
+                break;
+            }
+        }
+        else
+        {
+            //std::cout<<space_count<<std::endl;
+            if(space_count!=0)
+            {
+                for (int j = 0; j < space_count; j++)
+                {
+                    result+=" ";
+                }
+                space_count=0;
+            }
+
+            result+=str[i];
+        }
+    }
+    return result;
+}
+
+/********************Other functions end**********************/
+
+
+/********************PPE functions start**********************/
+
+
+//Get parallel processing function start
+std::string GETPPE(std::string VALUE,std::string KEY,int Mode)
+{
+    if(Mode == 1)
+    {
+        //Get len of string
+        int middleIndex = VALUE.length() / 2;
+
+        //divided string 2
+        std::string LeftSide = VALUE.substr(0, middleIndex);
+        std::string RightSide = VALUE.substr(middleIndex);
+
+        //Get encript
+        std::string LeftEn=GETPPESINGLE(LeftSide,KEY,Mode);
+        std::string RightEn=GETPPESINGLE(RightSide,KEY,Mode);
+
+        return LeftEn+"~|~"+RightEn;
+    }
+    else if(Mode == 0)
+    {
+
+        std::istringstream iss(VALUE);
+        std::string token;
+        std::vector<std::string> tokens;
+
+        while (std::getline(iss, token, '~')) {
+            // Remove the trailing "|"
+            if (!token.empty() && token.back() == '|') {
+                token.pop_back();
+            }
+            tokens.push_back(token);
+        }
+
+        // Now 'tokens' contains the split substrings
+        std::string LEFT_SIDE_VALUE=tokens[0];
+        std::string RIGHT_SIDE_VALUE=tokens[2];
+
+//        std::cout<<"a - "<<LEFT_SIDE_VALUE<<std::endl;
+//        std::cout<<"b - "<<RIGHT_SIDE_VALUE<<std::endl;
+
+        std::string LeftSideDecyption = GETPPESINGLE(LEFT_SIDE_VALUE ,KEY,Mode);
+        std::string RightSideDecyption = GETPPESINGLE(RIGHT_SIDE_VALUE ,KEY,Mode);
+
+
+
+        return RemoveTempsString(LeftSideDecyption)+""+RemoveTempsString(RightSideDecyption);
+    }
+
+}
+//Get parallel processing function end
+
+
+//Get Encyript start
+std::string GET_ENCRYPT_PPE(std::string VALUE,std::string KEY,int Mode)
+{
+
+    if(Mode == 1)
+    {
+        std::string result = GETPPE(VALUE,KEY,Mode);
+        return base64_encode(result);
+    }
+    else if(Mode == 0)
+    {
+        std::string Val = base64_decode_to_string(VALUE);
+
+        std::string result = GETPPE(Val,KEY,Mode);
+        return result;
+    }
+
+}
+//Get Encryipt end
+
+
+/********************PPE functions end**********************/
+
+
+
+/********************main function start**********************/
+
+int main()
+{
+
+    //Generate unixtime key test
+    std::string timezone = "Asia/Tehran";
+    std::string timeKey = GetCurrentTimeKey(timezone, false);
+    std::cout << "Current Time Key: " << timeKey << "\n";
+    std::cout << "Current Time Key: " << base64_encode(timeKey) << "\n";
+
+    std::cout << "\n---------------------------------------------------\n";
+    timeKey="123456789012345678901234";
+    std::string EN = GETPPESINGLE("HellotWorldcdaeq",timeKey,1);
+    //std::string DE = GETPPESINGLE(EN,timeKey,0);
+
+    std::cout << "ENC : " << EN << "\n";
+    std::string DE = GETPPESINGLE(EN,timeKey,0);
+    std::cout << "DEC : " << DE << "\n";
+    std::cout << "\n---------------------------------------------------\n";
+
+
+    return 0;
+}
+
+/********************main function start**********************/

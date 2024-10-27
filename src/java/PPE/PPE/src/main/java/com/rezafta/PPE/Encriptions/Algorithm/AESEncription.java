@@ -6,6 +6,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -33,42 +34,59 @@ public class AESEncription
     //Get encrption function start
     public String Encription(String Value,String Salt) throws Exception
     {
-        String result="";
-        String plainText = Value;
-
         //Get generate key by timestep
-        String secretKey = new String(Base64.getDecoder().decode(com.rezafta.PPE.Encriptions.Key.KeyGenerator.GetCurrentTimeKey(Salt).getBytes()));
+        String secretKey = new String(com.rezafta.PPE.Encriptions.Key.KeyGenerator.GetCurrentTimeKey(Salt).getBytes());
+        secretKey=secretKey.substring(0,16);
 
-        // Create AES key from the secret key
-        SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
 
-        // Initialize the cipher for encryption
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+        // Initialize the cipher in ECB mode
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
 
         // Encrypt the plaintext
-        byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
-        result = Base64.getEncoder().encodeToString(encryptedBytes);
+        byte[] encryptedBytes = cipher.doFinal(Value.getBytes(StandardCharsets.UTF_8));
 
-        return result;
+        // Encode the encrypted bytes as base64
+        String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedBytes);
+
+        return encryptedBase64;
     }
     //Get encrption function end
 
     //Get decrption function start
     public String Decription(String Value,String Slat) throws Exception
     {
-        String secretKey = new String(Base64.getDecoder().decode(com.rezafta.PPE.Encriptions.Key.KeyGenerator.GetCurrentTimeKey(Slat).getBytes()));
+        String secretKey = new String(com.rezafta.PPE.Encriptions.Key.KeyGenerator.GetCurrentTimeKey(Slat).getBytes());
+        secretKey=secretKey.substring(0,16);
 
-        // Create AES key from the secret key
-        SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
+//        // Create AES key from the secret key
+//        SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
+//
+//        // Initialize the cipher for encryption
+//        Cipher cipher = Cipher.getInstance("AES");
+//        cipher.init(Cipher.DECRYPT_MODE, keySpec);
+//
+//        // Decrypt the ciphertext
+//        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(Value));
+//        String decryptedText = new String(decryptedBytes);
 
-        // Initialize the cipher for encryption
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec);
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
+
+        // Initialize the cipher in decryption mode
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+
+        // Decode the base64-encoded ciphertext
+        byte[] encryptedBytes = Base64.getDecoder().decode(Value);
 
         // Decrypt the ciphertext
-        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(Value));
-        String decryptedText = new String(decryptedBytes);
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+
+        // Convert the decrypted bytes back to a string
+        String decryptedText = new String(decryptedBytes, StandardCharsets.UTF_8);
 
         return decryptedText;
     }
