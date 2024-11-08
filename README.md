@@ -21,107 +21,83 @@ PPE is a cross-platform encryption library that leverages parallel processing to
 
 ## Installation
 
-### Python
-```bash
-pip install ppe-lib
-```
-
-### MicroPython
-```bash
-mpremote mip install ppe-lib
-```
-
-### C++
+Clone the repository:
 ```bash
 git clone https://github.com/rezafarazi/PPE.git
-cd ppe/cpp
-cmake .
-make install
 ```
 
-### Java
-```xml
-<dependency>
-    <groupId>com.ppelib</groupId>
-    <artifactId>ppe-core</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
-## Quick Start
+## Usage
 
 ### Python
 ```python
-from ppe import ParallelEncryption
+from PPE.Python.PPE import ParallelEncryption
 
-# Initialize with number of processes
-pe = ParallelEncryption(processes=4)
-
-# Encrypt data
-encrypted_data = pe.encrypt(data, key)
-
-# Decrypt data
-decrypted_data = pe.decrypt(encrypted_data, key)
-```
-
-### MicroPython
-```python
-from ppe_micro import ParallelEncryption
-
-# Initialize (automatically detects core count)
+# Initialize encryption
 pe = ParallelEncryption()
 
 # Encrypt data
-encrypted_data = pe.encrypt(data, key)
+encrypted_data = pe.encrypt("Your text here")
+
+# Decrypt data
+decrypted_data = pe.decrypt(encrypted_data)
+
+print(decrypted_data)
+```
+
+### MicroPython
+```python
+from PPE.MicroPython.PPE import ParallelEncryption
+
+# Initialize encryption
+pe = ParallelEncryption()
+
+# Encrypt data
+encrypted_data = pe.encrypt("Your text here")
+
+# Decrypt data
+decrypted_data = pe.decrypt(encrypted_data)
+
+print(decrypted_data)
 ```
 
 ### C++
 ```cpp
-#include <ppe/parallel_encryption.hpp>
+#include "PPE/C++/PPE.h"
 
-// Initialize with thread count
-PPE::ParallelEncryption pe(4);
+int main() {
+    // Initialize encryption
+    PPE pe;
 
-// Encrypt data
-std::vector<uint8_t> encrypted = pe.encrypt(data, key);
+    // Encrypt data
+    string encrypted = pe.Encrypt("Your text here");
+
+    // Decrypt data
+    string decrypted = pe.Decrypt(encrypted);
+
+    cout << decrypted << endl;
+    return 0;
+}
 ```
 
 ### Java
 ```java
-import com.ppelib.ParallelEncryption;
+import PPE.Java.PPE;
 
-// Initialize with thread count
-ParallelEncryption pe = new ParallelEncryption(4);
+public class Main {
+    public static void main(String[] args) {
+        // Initialize encryption
+        PPE pe = new PPE();
 
-// Encrypt data
-byte[] encrypted = pe.encrypt(data, key);
+        // Encrypt data
+        String encrypted = pe.Encrypt("Your text here");
+
+        // Decrypt data
+        String decrypted = pe.Decrypt(encrypted);
+
+        System.out.println(decrypted);
+    }
+}
 ```
-
-## Advanced Usage
-
-### Custom Encryption Modes
-```python
-from ppe import ParallelEncryption, EncryptionMode
-
-pe = ParallelEncryption(
-    mode=EncryptionMode.HYBRID,
-    block_size=1024,
-    parallel_blocks=8
-)
-```
-
-### Stream Processing
-```python
-with pe.encrypt_stream('input.file', 'encrypted.file', key) as stream:
-    stream.process_chunks()
-```
-
-## Performance Considerations
-
-- Optimal performance is achieved with data sizes > 1MB
-- Default chunk size is optimized for most use cases
-- Thread count should match available CPU cores
-- Memory usage scales linearly with chunk size × thread count
 
 ## Contributing
 
@@ -155,4 +131,4 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 - Contributors and maintainers
 
 ---
-Made with ❤️ by the Rezafta
+Made with ❤️ by the PPE Library Team
