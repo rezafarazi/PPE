@@ -30,72 +30,54 @@ git clone https://github.com/rezafarazi/PPE.git
 
 ### Python
 ```python
-from PPE.Python.PPE import ParallelEncryption
+# main run
+if __name__ == '__main__':
 
-# Initialize encryption
-pe = ParallelEncryption()
+    data = "salam"
 
-# Encrypt data
-encrypted_data = pe.encrypt("Your text here")
+    encrypted_data = PPE(data, "reza")
+    print(f"Encrypted: {encrypted_data}")
+    
+    decrypted_data = PPD(encrypted_data, "reza")
+    print(f"Decrypted: {decrypted_data}")
 
-# Decrypt data
-decrypted_data = pe.decrypt(encrypted_data)
-
-print(decrypted_data)
 ```
 
 ### MicroPython
 ```python
-from PPE.MicroPython.PPE import ParallelEncryption
+# main run
+enc1 = PPE("salam", "reza")
+dec1 = PPD(enc1, "reza")
 
-# Initialize encryption
-pe = ParallelEncryption()
-
-# Encrypt data
-encrypted_data = pe.encrypt("Your text here")
-
-# Decrypt data
-decrypted_data = pe.decrypt(encrypted_data)
-
-print(decrypted_data)
-```
-
-### C++
-```cpp
-#include "PPE/C++/PPE.h"
-
-int main() {
-    // Initialize encryption
-    PPE pe;
-
-    // Encrypt data
-    string encrypted = pe.Encrypt("Your text here");
-
-    // Decrypt data
-    string decrypted = pe.Decrypt(encrypted);
-
-    cout << decrypted << endl;
-    return 0;
-}
+print("Text encript is : ", enc1)
+print("Text decript is : ", dec1)
 ```
 
 ### Java
 ```java
-import PPE.Java.PPE;
+package com.rezafta;
 
-public class Main {
-    public static void main(String[] args) {
-        // Initialize encryption
-        PPE pe = new PPE();
+import com.rezafta.PPE.PPE;
+import com.rezafta.PPE.Types.EncriptionTypes;
 
-        // Encrypt data
-        String encrypted = pe.Encrypt("Your text here");
+/**
+ * Hello world!
+ *
+ */
+public class App 
+{
+    public static void main( String[] args ) throws Exception
+    {
 
-        // Decrypt data
-        String decrypted = pe.Decrypt(encrypted);
+        PPE p=new PPE();
+        String result=p.GetEncription("salam", "reza",EncriptionTypes.AES);
+        System.out.println("En last is : "+result);
 
-        System.out.println(decrypted);
+        String results=p.GetDecription(result,"reza",EncriptionTypes.AES);
+        System.out.println("De last is : "+results);
+
     }
+
 }
 ```
 
