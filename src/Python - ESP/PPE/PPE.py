@@ -47,7 +47,8 @@ import json
 
 def get_unix_time():
     # Fetch the JSON response from the API
-    response = urequests.get("https://worldtimeapi.org/api/timezone/asia/tehran")
+    #response = urequests.get("https://worldtimeapi.org/api/timezone/asia/tehran")
+    response = urequests.get("http://future.izino.ir/index.php")
 
     if response.status_code == 200:
         data = response.json()

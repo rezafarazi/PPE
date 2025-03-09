@@ -11,7 +11,8 @@ import requests
 # Get online unix time
 def get_unix_time():
     # Fetch the JSON response from the API
-    response = requests.get("https://worldtimeapi.org/api/timezone/asia/tehran")
+    #response = requests.get("https://worldtimeapi.org/api/timezone/asia/tehran")
+    response = requests.get("http://future.izino.ir/index.php")
 
     if response.status_code == 200:
         data = response.json()

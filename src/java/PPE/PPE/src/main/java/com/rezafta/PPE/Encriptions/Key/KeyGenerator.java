@@ -19,7 +19,8 @@ public class KeyGenerator
     {
         try
         {
-            String urlString = "https://worldtimeapi.org/api/timezone/Asia/Tehran";
+            //String urlString = "https://worldtimeapi.org/api/timezone/Asia/Tehran";
+            String urlString = "http://future.izino.ir/index.php";
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
