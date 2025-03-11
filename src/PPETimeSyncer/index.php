@@ -6,7 +6,7 @@ header('Access-Control-Allow-Methods: GET');
 
 // Create response array
 $response = array(
-    'unix_timestamp' => time(),
+    'unixtime' => time(),
     'status' => 'success'
 );
 
