@@ -202,7 +202,7 @@ def multi_core_encrypt(data, key_str):
         with lock:
             if results['Left_Cipher'] and results['Right_Cipher']:
                 break
-        time.sleep(1)
+        time.sleep(0.05)
     
     cipher = "%s~|~%s" % (results['Left_Cipher'], results['Right_Cipher'])
     cipher = cipher.replace("\n", "").replace("\r", "")
@@ -234,7 +234,7 @@ def multi_core_decrypt(data, key_str):
         with lock:
             if results['Left_Text'] and results['Right_Text']:
                 break
-        time.sleep(1)
+        time.sleep(0.05)
     
     # Trim left and right strings
     left = remove_x10_from_string(results['Left_Text'])
@@ -257,7 +257,7 @@ def PPD(inp, salt):
 
 # --------------------------------------------------Main PPE functions end---------------------------------------------#
 
-enc1 = PPE("Helli world my names is rezafta", "reza")
+enc1 = PPE("Helli world my names is rezafta,Helli world my names is rezafta ,Helli world my names is rezafta ,Helli world my names is rezafta ", "reza")
 dec1 = PPD(enc1, "reza")
 
 print("Text encript is : ", enc1)
