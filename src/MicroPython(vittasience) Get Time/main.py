@@ -21,7 +21,7 @@ lock = _thread.allocate_lock()
 
 # --------------------------------------------------WIFI and board functions start---------------------------------------------#
 
-@calculate_time
+# @calculate_time
 def connect_wifi(ssid, password):
     wlan = network.WLAN(network.STA_IF)  # Create WLAN object
     wlan.active(True)  # Activate station mode
@@ -48,7 +48,7 @@ connect_wifi('Reza', '@Key123456')
 import urequests
 import json
 
-@calculate_time
+# @calculate_time
 def get_unix_time():
     try:
         response = urequests.get("http://future.izino.ir/index.php")
@@ -62,7 +62,7 @@ def get_unix_time():
     except Exception as e:
         return 'N/A'
 
-@calculate_time
+# @calculate_time
 def get_current_time_key(salt):
     keybase = ""
     key = ""
@@ -124,7 +124,7 @@ def get_key2(key_str):
 
 # --------------------------------------------------Other functions start---------------------------------------------#
 
-@calculate_time
+# @calculate_time
 def remove_x10_from_string(input_str):
     # Convert string to bytes
     byte_data = input_str.encode('utf-8')
@@ -150,7 +150,7 @@ def unpad(s):
     # Remove padding from string
     return s[:-ord(s[-1])]
 
-@calculate_time
+# @calculate_time
 def single_core_encrypt(data, key_str):
     byte_data = key_str[0:16]
     key = byte_data.decode('latin-1')
@@ -160,7 +160,7 @@ def single_core_encrypt(data, key_str):
     encoded_ciphertext = ubinascii.b2a_base64(ciphertext).decode('utf-8')
     return encoded_ciphertext
 
-@calculate_time
+# @calculate_time
 def single_core_decrypt(enc_data, key_str):
     byte_data = key_str[0:16]
     key = byte_data.decode('latin-1')
@@ -185,7 +185,7 @@ def encrypt_right(data, key):
     with lock:
         results['Right_Cipher'] = result
 
-@calculate_time
+# @calculate_time
 def multi_core_encrypt(data, key_str):
     global result
     # Calculate the midpoint of the string
@@ -220,7 +220,7 @@ def decrypt_right(data, key):
     with lock:
         results['Right_Text'] = result
 
-@calculate_time
+# @calculate_time
 def multi_core_decrypt(data, key_str):
     Ciphers = ubinascii.a2b_base64(data).decode('utf-8')
     main_cipher = Ciphers.split('~|~')
