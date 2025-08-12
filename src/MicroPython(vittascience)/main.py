@@ -15,11 +15,11 @@ lock = _thread.allocate_lock()
 # --------------------------------------------------WIFI and board functions start---------------------------------------------#
 
 def connect_wifi(ssid, password):
-    wlan = network.WLAN(network.STA_IF)  # ایجاد شیء WLAN
-    wlan.active(True)  # فعال کردن حالت ایستگاه
-    wlan.connect(ssid, password)  # اتصال به شبکه
+    wlan = network.WLAN(network.STA_IF)  # Create WLAN object
+    wlan.active(True)  # Enable station mode
+    wlan.connect(ssid, password)  # Connect to network
 
-    # انتظار برای اتصال
+    # Wait for connection
     max_attempts = 10
     attempt = 0
     while not wlan.isconnected() and attempt < max_attempts:
@@ -34,8 +34,8 @@ def connect_wifi(ssid, password):
         print('Failed to connect')
 
 
-# فراخوانی تابع با استفاده از SSID و رمز عبور شبکه
-connect_wifi('Reza', '@Key123456')
+# Call the function with network SSID and password
+connect_wifi('Reza', '---------')
 
 # --------------------------------------------------WIFI and board functions end---------------------------------------------#
 
@@ -47,13 +47,13 @@ import json
 
 def get_unix_time():
     # Fetch the JSON response from the API
-    #response = urequests.get("https://worldtimeapi.org/api/timezone/asia/tehran")
-    response = urequests.get("http://future.izino.ir/index.php")
+    response = urequests.get("http://ip-api.com/json/?fields=status,message,timezone,offset")
+    # response = urequests.get("https://www.allmypages.ir/unix.php")
 
     if response.status_code == 200:
         data = response.json()
         # Extract the Unix time
-        unix_time = data.get('unixtime', 'N/A')
+        unix_time = data.get('offset', 'N/A')
 
     response.close()
 
@@ -323,4 +323,3 @@ dec1 = PPD(enc1, "reza")
 
 print("Text encript is : ", enc1)
 print("Text decript is : ", dec1)
-

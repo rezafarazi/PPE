@@ -12,12 +12,12 @@ import requests
 def get_unix_time():
     # Fetch the JSON response from the API
     #response = requests.get("https://worldtimeapi.org/api/timezone/asia/tehran")
-    response = requests.get("http://future.izino.ir/index.php")
+    response = requests.get("http://ip-api.com/json/?fields=status,message,timezone,offset")
 
     if response.status_code == 200:
         data = response.json()
         # Extract the Unix time
-        unix_time = data.get('unixtime', 'N/A')
+        unix_time = data.get('offset', 'N/A')
 
     response.close()
     return unix_time
