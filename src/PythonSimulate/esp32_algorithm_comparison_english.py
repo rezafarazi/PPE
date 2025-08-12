@@ -665,6 +665,116 @@ def print_algorithm_analysis(results):
     print("• Memory efficiency: PPE < AES < RSA")
     print("• Security level: PPE < AES < RSA")
 
+def print_detailed_comparison_table(results):
+    """Print detailed comparison table based on actual simulation results"""
+    
+    print("\n" + "="*100)
+    print("📋 DETAILED ALGORITHM COMPARISON TABLE (Based on ESP32 Simulation)")
+    print("="*100)
+    
+    # Table 1: Performance Comparison by Data Size
+    print("\n📊 Table 1: Performance Comparison by Data Size")
+    print("-" * 100)
+    print(f"{'Data Size':<20} {'Algorithm':<15} {'Total Time (ms)':<20} {'Memory (bytes)':<20} {'Success Rate':<15}")
+    print("-" * 100)
+    
+    for size_name, algo_results in results.items():
+        for algorithm in ["ppe", "aes", "rsa"]:
+            if algo_results.get(algorithm):
+                result = algo_results[algorithm]
+                print(f"{size_name:<20} {algorithm.upper():<15} {result['total_time']:<20.1f} {result['memory_usage']:<20,.0f} {result['success_rate']:<15.0f}%")
+    
+    # Table 2: Algorithm Performance Summary
+    print("\n\n📊 Table 2: Algorithm Performance Summary")
+    print("-" * 100)
+    print(f"{'Algorithm':<15} {'Avg Time (ms)':<20} {'Avg Memory (bytes)':<25} {'Performance Rating':<25} {'ESP32 Suitability':<20}")
+    print("-" * 100)
+    
+    algorithms = ["ppe", "aes", "rsa"]
+    algorithm_names = {"ppe": "PPE", "aes": "AES-128", "rsa": "RSA-2048"}
+    
+    for algorithm in algorithms:
+        total_times = []
+        memory_usages = []
+        
+        for size_name, algo_results in results.items():
+            if algo_results.get(algorithm):
+                total_times.append(algo_results[algorithm]['total_time'])
+                memory_usages.append(algo_results[algorithm]['memory_usage'])
+        
+        if total_times:
+            avg_time = sum(total_times) / len(total_times)
+            avg_memory = sum(memory_usages) / len(memory_usages)
+            
+            # Performance rating
+            if avg_time < 100:
+                rating = "🚀 Excellent"
+                suitability = "✅ Perfect"
+            elif avg_time < 200:
+                rating = "✅ Good"
+                suitability = "✅ Good"
+            elif avg_time < 500:
+                rating = "⚠️ Acceptable"
+                suitability = "⚠️ Limited"
+            else:
+                rating = "❌ Slow"
+                suitability = "❌ Poor"
+            
+            print(f"{algorithm_names[algorithm]:<15} {avg_time:<20.1f} {avg_memory:<25,.0f} {rating:<25} {suitability:<20}")
+    
+    # Table 3: Memory Efficiency Analysis
+    print("\n\n📊 Table 3: Memory Efficiency Analysis")
+    print("-" * 100)
+    print(f"{'Data Size':<20} {'PPE (KB)':<15} {'AES (KB)':<15} {'RSA (KB)':<15} {'Memory Ratio':<20}")
+    print("-" * 100)
+    
+    for size_name, algo_results in results.items():
+        ppe_mem = algo_results.get("ppe", {}).get('memory_usage', 0) / 1024 if algo_results.get("ppe") else 0
+        aes_mem = algo_results.get("aes", {}).get('memory_usage', 0) / 1024 if algo_results.get("aes") else 0
+        rsa_mem = algo_results.get("rsa", {}).get('memory_usage', 0) / 1024 if algo_results.get("rsa") else 0
+        
+        if ppe_mem > 0:
+            ratio = f"PPE:{ppe_mem:.1f} | AES:{aes_mem:.1f} | RSA:{rsa_mem:.1f}"
+            print(f"{size_name:<20} {ppe_mem:<15.1f} {aes_mem:<15.1f} {rsa_mem:<15.1f} {ratio:<20}")
+    
+    # Table 4: Speed vs Security Trade-off
+    print("\n\n📊 Table 4: Speed vs Security Trade-off Analysis")
+    print("-" * 100)
+    print(f"{'Algorithm':<15} {'Speed Score':<15} {'Security Level':<20} {'Memory Score':<20} {'Overall Rating':<20}")
+    print("-" * 100)
+    
+    for algorithm in algorithms:
+        total_times = []
+        memory_usages = []
+        
+        for size_name, algo_results in results.items():
+            if algo_results.get(algorithm):
+                total_times.append(algo_results[algorithm]['total_time'])
+                memory_usages.append(algo_results[algorithm]['memory_usage'])
+        
+        if total_times:
+            avg_time = sum(total_times) / len(total_times)
+            avg_memory = sum(memory_usages) / len(memory_usages)
+            
+            # Calculate scores (1-5 scale, 5 is best)
+            max_time = max([results[size].get(algo, {}).get('total_time', 0) for size in results for algo in algorithms if results[size].get(algo)])
+            max_memory = max([results[size].get(algo, {}).get('memory_usage', 0) for size in results for algo in algorithms if results[size].get(algo)])
+            
+            speed_score = 5 - (avg_time / max_time * 4) if max_time > 0 else 5
+            memory_score = 5 - (avg_memory / max_memory * 4) if max_memory > 0 else 5
+            
+            # Security levels
+            security_levels = {"ppe": "Basic", "aes": "High", "rsa": "Very High"}
+            security_score = {"ppe": 2, "aes": 4, "rsa": 5}[algorithm]
+            
+            overall = (speed_score + memory_score + security_score) / 3
+            
+            print(f"{algorithm_names[algorithm]:<15} {speed_score:<15.1f} {security_levels[algorithm]:<20} {memory_score:<20.1f} {overall:<20.1f}")
+    
+    print("-" * 100)
+    print("📊 ESP32 Simulation Results - Real Performance Data")
+    print("💡 Based on actual benchmark measurements with CPU slowdown and memory limits")
+
 if __name__ == "__main__":
     print("🚀 Starting ESP32 Algorithm Comparison Simulation")
     print("This will compare PPE, AES, and RSA algorithms on ESP32")
@@ -676,6 +786,7 @@ if __name__ == "__main__":
         
         if results:
             print_algorithm_analysis(results)
+            print_detailed_comparison_table(results)
             plot_algorithm_comparison_charts(results)
         else:
             print("❌ No results obtained from benchmark")
