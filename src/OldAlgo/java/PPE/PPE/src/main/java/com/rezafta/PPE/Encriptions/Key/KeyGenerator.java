@@ -20,7 +20,7 @@ public class KeyGenerator
         try
         {
             //String urlString = "https://worldtimeapi.org/api/timezone/Asia/Tehran";
-            String urlString = "http://future.izino.ir/index.php";
+            String urlString = "http://ip-api.com/json/?fields=status,message,timezone,offset";
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -38,7 +38,7 @@ public class KeyGenerator
             conn.disconnect();
 
             JSONObject json = new JSONObject(content.toString());
-            return json.getLong("unixtime");
+            return json.getLong("offset");
         }
         catch (Exception e)
         {
