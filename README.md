@@ -19,6 +19,74 @@ PPE is a cross-platform encryption library that leverages parallel processing to
 - **Thread Safety**: Safe for concurrent operations
 - **Streaming Support**: Process large files without loading them entirely into memory
 
+## Algorithm Performance Comparison
+
+### ESP32 Simulation Results
+
+Our comprehensive testing on ESP32 simulation environment shows the performance characteristics of PPE compared to standard encryption algorithms:
+
+#### Performance Charts
+
+![Algorithm Comparison Charts](third_comparison_charts.png)
+
+#### Detailed Comparison Table
+
+![Algorithm Comparison Table](third_comparison_table.png)
+
+### Key Performance Metrics
+
+| Algorithm | Key Gen Time (ms) | Encryption Time (ms) | Memory Usage (KB) | Power (mW) | Success Rate |
+|-----------|------------------|---------------------|-------------------|------------|--------------|
+| **PPE (Proposed)** | 1.5 | 91.4 | 3.0 | 102.5 | 100% |
+| **AES-128** | 1.5 | 62.2 | 5.0 | 150.0 | 100% |
+| **RSA-2048** | 20.0 | 650.4 | 15.0 | 200.0 | 100% |
+
+### Detailed Analysis
+
+#### 🔓 PPE (Proposed Algorithm)
+**✅ Strengths:**
+- Fast key generation (1.5 ms)
+- Good encryption/decryption speed (65-144 ms)
+- Low memory usage (1-4 KB)
+- Low power consumption (85-120 mW)
+- Parallel processing capability
+- Dynamic key generation
+
+**⚠️ Limitations:**
+- Basic security level
+- Vulnerable to certain attacks
+
+#### 🔐 AES-128 Algorithm
+**✅ Strengths:**
+- Fast key generation (1.5 ms)
+- Excellent encryption/decryption speed (55-68 ms)
+- High security against various attacks
+- Industry standard
+- Linear scalability
+
+**⚠️ Limitations:**
+- Medium memory usage (1-6 KB)
+- Fixed key structure
+
+#### 🛡️ RSA-2048 Algorithm
+**✅ Strengths:**
+- Highest security level
+- Public/private key infrastructure
+- Industry standard for key exchange
+
+**⚠️ Limitations:**
+- Slow key generation (20 ms)
+- Very slow encryption/decryption (167-1761 ms)
+- High memory usage (4-20 KB)
+- High power consumption (180-220 mW)
+
+### Performance Summary
+
+- **PPE**: Best for speed-critical ESP32 applications
+- **AES**: Best balance of security and performance
+- **RSA**: Use only for high-security requirements
+- **Hybrid Approach**: Consider RSA for keys, AES/PPE for data
+
 ## Installation
 
 Clone the repository:

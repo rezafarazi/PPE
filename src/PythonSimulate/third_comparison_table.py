@@ -222,6 +222,10 @@ def create_visual_comparison_charts():
                     f'{height}', ha='center', va='bottom', fontsize=9)
     
     plt.tight_layout()
+    
+    # Save the chart as PNG
+    plt.savefig('third_comparison_charts.png', dpi=300, bbox_inches='tight')
+    print("📊 Saved: third_comparison_charts.png")
     plt.show()
 
 def create_detailed_table_image():
@@ -257,6 +261,10 @@ def create_detailed_table_image():
               fontsize=16, fontweight='bold', pad=20)
     
     plt.tight_layout()
+    
+    # Save the table as PNG
+    plt.savefig('third_comparison_table.png', dpi=300, bbox_inches='tight')
+    print("📋 Saved: third_comparison_table.png")
     plt.show()
 
 def print_detailed_analysis():
