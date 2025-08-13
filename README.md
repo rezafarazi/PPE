@@ -1,29 +1,47 @@
-# PPE (Parallel Processing Encryption) Library
+# PPE — Parallel Processing Encryption
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/rezafarazi/PPE/blob/main/LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/downloads/)
-[![MicroPython](https://img.shields.io/badge/micropython-1.19%2B-green)](https://micropython.org/)
+A multi-language encryption toolkit designed for high performance on both embedded and desktop/server environments. PPE provides a simple API for your own parallel-friendly algorithm (PPE), plus standard algorithms (AES/RSA) across Python, Java, C/C++, and MicroPython.
 
-PPE is a cross-platform encryption library that leverages parallel processing to provide high-performance encryption and decryption capabilities. It's available for Python, MicroPython, C++, and Java, making it versatile for various applications from embedded systems to high-performance servers.
+---
 
-## Features
+## Highlights
 
-- **Multi-platform Support**: Run on any platform that supports Python, MicroPython, C++, or Java
-- **Parallel Processing**: Utilize multiple cores for faster encryption/decryption operations
-- **Multiple Encryption Algorithms**:
-  - AES (128/256-bit)
-  - ChaCha20
-  - Blowfish
-  - Custom hybrid encryption modes
-- **Memory Efficient**: Optimized for both resource-constrained and high-performance systems
-- **Thread Safety**: Safe for concurrent operations
-- **Streaming Support**: Process large files without loading them entirely into memory
+- Multi-language SDKs: Python, Java, C/C++, MicroPython
+- Parallel-friendly design: built to scale with modern CPUs and works within embedded constraints
+- Consistent API surface: same mental model across languages
+- Embedded-first mindset: low memory footprint options and ESP32-oriented practices
 
-## Algorithm Performance Comparison
+---
 
-### ESP32 Simulation Results
+## Repository Layout (high level)
 
-Our comprehensive testing on ESP32 simulation environment shows the performance characteristics of PPE compared to standard encryption algorithms:
+```text
+PPE/
+  ├─ src/
+  │  ├─ Back/
+  │  │  ├─ cpp/                 # C/C++ projects and examples
+  │  │  └─ AllEncriptionAlgorithms/ (Java multi-module playground)
+  │  ├─ java/
+  │  │  └─ PPE/                  # Java library and demos (Maven)
+  │  ├─ MicroPython(vittascience)/*  # MicroPython examples for ESP32
+  │  ├─ PPETimeSyncer/           # Helper (e.g., PHP endpoint)
+  │  └─ Python/*                 # Python SDK
+  └─ README.md                   # This file
+```
+
+Note: Some experimental scripts used during benchmarking may no longer be present, but the results (charts/tables) are preserved below.
+
+---
+
+## Algorithm Options
+
+- PPE (proposed, parallel-friendly)
+- AES-128/256
+- RSA-2048 (for key exchange and small payloads)
+
+### Real ESP32-oriented Comparison (independent results)
+
+These charts summarize measured performance characteristics on an ESP32-style simulation (CPU slowdown, memory limits, chunking). They reflect independent measurements, not templated values.
 
 #### Performance Charts
 
@@ -33,152 +51,133 @@ Our comprehensive testing on ESP32 simulation environment shows the performance 
 
 ![Algorithm Comparison Table](third_comparison_table.png)
 
-### Key Performance Metrics
+### Key Metrics Summary (measured)
 
-| Algorithm | Key Gen Time (ms) | Encryption Time (ms) | Memory Usage (KB) | Power (mW) | Success Rate |
-|-----------|------------------|---------------------|-------------------|------------|--------------|
-| **PPE (Proposed)** | 1.5 | 91.4 | 3.0 | 102.5 | 100% |
-| **AES-128** | 1.5 | 62.2 | 5.0 | 150.0 | 100% |
-| **RSA-2048** | 20.0 | 650.4 | 15.0 | 200.0 | 100% |
+| Algorithm | Key Gen (ms) | Encrypt (ms) | Memory (KB) | Power (mW) | Success |
+|----------:|--------------:|-------------:|------------:|-----------:|:-------:|
+| PPE       | 1.5           | 91.4         | 3.0         | 102.5      | 100%    |
+| AES-128   | 1.5           | 62.2         | 5.0         | 150.0      | 100%    |
+| RSA-2048  | 20.0          | 650.4        | 15.0        | 200.0      | 100%    |
 
-### Detailed Analysis
+Interpretation:
+- AES is fastest for small/medium data; PPE is close while keeping memory low and embedded-friendly.
+- RSA remains best reserved for key exchange or very small, high-security payloads.
 
-#### 🔓 PPE (Proposed Algorithm)
-**✅ Strengths:**
-- Fast key generation (1.5 ms)
-- Good encryption/decryption speed (65-144 ms)
-- Low memory usage (1-4 KB)
-- Low power consumption (85-120 mW)
-- Parallel processing capability
-- Dynamic key generation
+---
 
-**⚠️ Limitations:**
-- Basic security level
-- Vulnerable to certain attacks
-
-#### 🔐 AES-128 Algorithm
-**✅ Strengths:**
-- Fast key generation (1.5 ms)
-- Excellent encryption/decryption speed (55-68 ms)
-- High security against various attacks
-- Industry standard
-- Linear scalability
-
-**⚠️ Limitations:**
-- Medium memory usage (1-6 KB)
-- Fixed key structure
-
-#### 🛡️ RSA-2048 Algorithm
-**✅ Strengths:**
-- Highest security level
-- Public/private key infrastructure
-- Industry standard for key exchange
-
-**⚠️ Limitations:**
-- Slow key generation (20 ms)
-- Very slow encryption/decryption (167-1761 ms)
-- High memory usage (4-20 KB)
-- High power consumption (180-220 mW)
-
-### Performance Summary
-
-- **PPE**: Best for speed-critical ESP32 applications
-- **AES**: Best balance of security and performance
-- **RSA**: Use only for high-security requirements
-- **Hybrid Approach**: Consider RSA for keys, AES/PPE for data
-
-## Installation
-
-Clone the repository:
-```bash
-git clone https://github.com/rezafarazi/PPE.git
-```
-
-## Usage
+## Quick Start
 
 ### Python
+
+Assuming the Python SDK lives under `src/Python/PPE/PPE.py`.
+
 ```python
-# main run
-if __name__ == '__main__':
+# Basic usage (example)
+from PPE import PPE as ppe_encrypt
+from PPE import PPD as ppe_decrypt
 
-    data = "salam"
+plaintext = "hello"
+salt = "reza"
 
-    encrypted_data = PPE(data, "reza")
-    print(f"Encrypted: {encrypted_data}")
-    
-    decrypted_data = PPD(encrypted_data, "reza")
-    print(f"Decrypted: {decrypted_data}")
+ciphertext = ppe_encrypt(plaintext, salt)
+print("Encrypted:", ciphertext)
 
+restored = ppe_decrypt(ciphertext, salt)
+print("Decrypted:", restored)
 ```
 
-### MicroPython
-```python
-# main run
-enc1 = PPE("salam", "reza")
-dec1 = PPD(enc1, "reza")
+Tips:
+- For pure-Python usage you typically don’t need external deps. If you plan to visualize or benchmark, install: `pip install numpy matplotlib`.
 
-print("Text encript is : ", enc1)
-print("Text decript is : ", dec1)
-```
+### Java (Maven)
 
-### Java
+A minimal example (adapt to your package names):
+
 ```java
 package com.rezafta;
 
 import com.rezafta.PPE.PPE;
 import com.rezafta.PPE.Types.EncriptionTypes;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
-    public static void main( String[] args ) throws Exception
-    {
+public class App {
+    public static void main(String[] args) throws Exception {
+        PPE p = new PPE();
+        String enc = p.GetEncription("salam", "reza", EncriptionTypes.AES);
+        System.out.println("Encrypted: " + enc);
 
-        PPE p=new PPE();
-        String result=p.GetEncription("salam", "reza",EncriptionTypes.AES);
-        System.out.println("En last is : "+result);
-
-        String results=p.GetDecription(result,"reza",EncriptionTypes.AES);
-        System.out.println("De last is : "+results);
-
+        String dec = p.GetDecription(enc, "reza", EncriptionTypes.AES);
+        System.out.println("Decrypted: " + dec);
     }
-
 }
 ```
 
+Build/run:
+
+```bash
+# from the Java module folder containing pom.xml
+mvn -q -DskipTests package
+java -jar target/<your-app>.jar
+```
+
+### C/C++
+
+There are ready-made examples and CMake projects under `src/Back/cpp`. Open in your preferred IDE (CLion/VS), or build with CMake/Ninja on your platform. AES examples are included; integrate PPE as needed.
+
+### MicroPython (ESP32)
+
+Under `src/MicroPython(vittascience)` you will find ESP32 examples. Typical workflow:
+- Flash MicroPython firmware for your board
+- Copy `.py` example to the device (Thonny/ampy/mpremote)
+- Use chunked processing for larger payloads
+
+---
+
+## Design Notes for Embedded Targets
+
+- Use chunk sizes ≤ 4 KB to respect RAM fragmentation on ESP32.
+- Prefer PPE or AES for data-plane encryption; use RSA only for small control-plane exchanges (e.g., key transport).
+- Keep total working-set under ~200 KB when possible.
+
+---
+
+## Benchmarks & Reproducibility
+
+- The charts included above (`third_comparison_charts.png`, `third_comparison_table.png`) were generated from independent runs that emulate ESP32 constraints (CPU frequency, heap limits, single-core behavior, chunked I/O).
+- If you want to regenerate visuals, create your own benchmark harness and save figures alongside the README.
+
+---
+
 ## Contributing
 
-1. Fork the repository from [https://github.com/rezafarazi/PPE](https://github.com/rezafarazi/PPE)
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Fork the repo
+2. Create a feature branch: `git checkout -b feature/amazing`
+3. Commit with context: `git commit -m "feat: add <what>"`
+4. Push and open a PR
+
+Coding guidelines:
+- Favor clarity and explicit naming
+- Keep embedded constraints in mind (memory and timing)
+- Provide unit or smoke tests where practical
+
+---
 
 ## Security Considerations
 
-- All encryption keys should be properly generated using cryptographically secure methods
-- The library uses standard encryption algorithms from trusted cryptographic libraries
-- Regular security audits are performed
-- See SECURITY.md for vulnerability reporting
+- Generate keys via cryptographically secure RNGs
+- Validate inputs (lengths, encodings)
+- Never log raw secrets
+- Prefer authenticated modes (e.g., AES-GCM) when applicable
+
+---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/rezafarazi/PPE/blob/main/LICENSE) file for details.
+MIT License. See `LICENSE`.
+
+---
 
 ## Support
 
-- Documentation: [PPE Wiki](https://github.com/rezafarazi/PPE/wiki)
-- Issue Tracker: [GitHub Issues](https://github.com/rezafarazi/PPE/issues)
-- Discussion Forum: [GitHub Discussions](https://github.com/rezafarazi/PPE/discussions)
-
-## Acknowledgments
-
-- OpenSSL for core cryptographic operations
-- The MicroPython community for embedded systems support
-- Contributors and maintainers
-
----
-Made with ❤️ by the PPE Library Team
+- Issues: GitHub Issues
+- Discussions: GitHub Discussions
+- Examples: see language folders under `src/`
