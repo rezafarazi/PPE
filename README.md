@@ -1,6 +1,30 @@
 # PPE — Parallel Processing Encryption
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org)
+[![Java Version](https://img.shields.io/badge/java-11%2B-red)](https://www.java.com)
+[![C++ Version](https://img.shields.io/badge/C%2B%2B-17-00599C)](https://en.cppreference.com)
+[![ESP32](https://img.shields.io/badge/ESP32-Compatible-green)](https://www.espressif.com)
+
 A high-performance, parallel processing encryption system that significantly outperforms traditional encryption methods. Based on comprehensive testing and benchmarking, PPE achieves a 9.5/10 efficiency score in thread utilization, compared to 2.2/10 for AES and 1.2/10 for RSA.
+
+## Table of Contents
+- [Key Performance Highlights](#key-performance-highlights)
+- [Highlights](#highlights)
+- [Repository Layout](#repository-layout-high-level)
+- [Algorithm Options](#algorithm-options)
+- [Performance Analysis](#comprehensive-performance-analysis)
+- [Quick Start](#quick-start)
+  - [Python](#python)
+  - [Java](#java-maven)
+  - [C/C++](#cc)
+  - [MicroPython](#micropython-esp32)
+- [Design Notes](#design-notes-for-embedded-targets)
+- [Benchmarks](#benchmarks--reproducibility)
+- [Contributing](#contributing)
+- [Security](#security-considerations)
+- [License](#license)
+- [Support](#support)
 
 ## Key Performance Highlights
 - **4.3x Better** thread utilization than AES
@@ -98,7 +122,7 @@ Note: Some experimental scripts used during benchmarking may no longer be presen
 Our extensive testing and benchmarking demonstrate PPE's superior performance across multiple metrics:
 
 ### Thread Utilization Efficiency
-![Thread Utilization Comparison](./1.png)
+![Thread Utilization Comparison](./docs/images/1.png)
 *Thread utilization comparison showing PPE's 9.5/10 efficiency score compared to traditional methods*
 
 Key findings:
@@ -147,6 +171,38 @@ Interpretation:
 - RSA remains best reserved for key exchange or very small, high-security payloads.
 
 ---
+
+## Installation
+
+### Requirements
+- Python 3.7+
+- Java 11+ (for Java implementation)
+- C++17 compatible compiler (for C++ implementation)
+- ESP32 board (for embedded implementation)
+
+### Package Installation
+
+#### Python
+```bash
+pip install ppe-crypto
+```
+
+#### Java
+```xml
+<dependency>
+    <groupId>com.rezafta</groupId>
+    <artifactId>ppe</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+#### C++
+```bash
+git clone https://github.com/rezafarazi/PPE.git
+cd PPE/src/Back/cpp/Latest_PPE
+cmake .
+make
+```
 
 ## Quick Start
 
@@ -255,7 +311,16 @@ Coding guidelines:
 
 ## License
 
-MIT License. See `LICENSE`.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+This project is licensed under the MIT License. This means you can:
+- ✅ Use the software commercially
+- ✅ Modify the software
+- ✅ Distribute the software
+- ✅ Use and modify the software privately
+- ✅ No warranty is provided
+
+See the [LICENSE](LICENSE) file for the full license text.
 
 ---
 
