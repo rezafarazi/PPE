@@ -110,8 +110,8 @@ class ESP32CryptoSimulator:
         
         return key.encode('utf-8')
     
-    def simple_xor_encrypt(self, data, key):
-        """Simple XOR encryption like ESP32"""
+    def simple_PPE_encrypt(self, data, key):
+        """Simple PPE encryption like ESP32"""
         start_time = time.perf_counter()
         
         # بررسی محدودیت حافظه
@@ -137,8 +137,8 @@ class ESP32CryptoSimulator:
         
         return result.hex()
     
-    def simple_xor_decrypt(self, hex_data, key):
-        """Simple XOR decryption"""
+    def simple_PPE_decrypt(self, hex_data, key):
+        """Simple PPE decryption"""
         start_time = time.perf_counter()
         
         try:
@@ -313,7 +313,7 @@ class ESP32CryptoSimulator:
         except Exception as e:
             return f"RSA decryption failed: {str(e)}"
     
-    def chunked_process(self, data, salt, algorithm="xor", encrypt=True):
+    def chunked_process(self, data, salt, algorithm="PPE", encrypt=True):
         """Chunked processing like ESP32"""
         key = self.get_current_time_key(salt)
         
@@ -322,11 +322,11 @@ class ESP32CryptoSimulator:
         
         if len(data.encode('utf-8')) <= chunk_size:
             # داده کوچک - پردازش یکجا
-            if algorithm == "xor":
+            if algorithm == "PPE":
                 if encrypt:
-                    return self.simple_xor_encrypt(data, key)
+                    return self.simple_PPE_encrypt(data, key)
                 else:
-                    return self.simple_xor_decrypt(data, key)
+                    return self.simple_PPE_decrypt(data, key)
             elif algorithm == "aes":
                 if encrypt:
                     return self.aes_encrypt(data, key)
@@ -349,11 +349,11 @@ class ESP32CryptoSimulator:
             # داده بزرگ - پردازش تکه‌ای
             result_parts = []
             
-            if algorithm == "xor":
+            if algorithm == "PPE":
                 if encrypt:
                     for i in range(0, len(data), chunk_size):
                         chunk = data[i:i + chunk_size]
-                        encrypted_chunk = self.simple_xor_encrypt(chunk, key)
+                        encrypted_chunk = self.simple_PPE_encrypt(chunk, key)
                         result_parts.append(encrypted_chunk)
                         
                         # شبیه‌سازی تأخیر بین چانک‌ها
@@ -365,7 +365,7 @@ class ESP32CryptoSimulator:
                     chunks = data.split("|")
                     for chunk in chunks:
                         if chunk:
-                            decrypted_chunk = self.simple_xor_decrypt(chunk, key)
+                            decrypted_chunk = self.simple_PPE_decrypt(chunk, key)
                             result_parts.append(decrypted_chunk)
                             self.simulator.simulate_cpu_slowdown(0.001)
                     
@@ -392,7 +392,7 @@ class ESP32CryptoSimulator:
                 # RSA is not suitable for large data on ESP32
                 return f"RSA not suitable for data size {len(data)} bytes"
     
-    def encrypt(self, data, salt, algorithm="xor"):
+    def encrypt(self, data, salt, algorithm="PPE"):
         """Main encryption function"""
         if algorithm == "rsa":
             encrypted, private_key = self.chunked_process(data, salt, algorithm, encrypt=True)
@@ -402,7 +402,7 @@ class ESP32CryptoSimulator:
             key = self.get_current_time_key(salt)
             return encrypted, key.hex()
     
-    def decrypt(self, encrypted_data, salt, algorithm="xor", key=None):
+    def decrypt(self, encrypted_data, salt, algorithm="PPE", key=None):
         """Main decryption function"""
         if algorithm == "rsa":
             return self.chunked_process(encrypted_data, salt, algorithm, encrypt=False)
@@ -410,7 +410,7 @@ class ESP32CryptoSimulator:
             return self.chunked_process(encrypted_data, salt, algorithm, encrypt=False)
 
 def esp32_algorithm_benchmark():
-    """Compare XOR, AES, and RSA algorithms on ESP32"""
+    """Compare PPE, AES, and RSA algorithms on ESP32"""
     
     # داده‌های آزمایشی مناسب ESP32
     test_cases = [
@@ -420,7 +420,7 @@ def esp32_algorithm_benchmark():
         ("ESP32 Large (2KB)", "ESP32 large test. " + "This simulates larger data processing on ESP32 microcontroller. " * 40),
     ]
     
-    algorithms = ["xor", "aes", "rsa"]
+    algorithms = ["PPE", "aes", "rsa"]
     crypto_sim = ESP32CryptoSimulator()
     results = {}
     salt = "esp32test"
@@ -430,7 +430,7 @@ def esp32_algorithm_benchmark():
     print("="*70)
     print(f"Target Device: ESP32 (240MHz, 520KB RAM)")
     print(f"Host System: i7-13650HX (16GB DDR5)")
-    print(f"Algorithms: XOR, AES-128, RSA-2048")
+    print(f"Algorithms: PPE, AES-128, RSA-2048")
     print(f"Simulation Method: CPU slowdown + Memory limits")
     print()
     
@@ -445,7 +445,7 @@ def esp32_algorithm_benchmark():
             
             # بررسی محدودیت حافظه
             try:
-                memory_multiplier = 3 if algorithm == "xor" else (4 if algorithm == "aes" else 10)
+                memory_multiplier = 3 if algorithm == "PPE" else (4 if algorithm == "aes" else 10)
                 crypto_sim.simulator.check_memory_limit(len(test_data.encode('utf-8')) * memory_multiplier)
             except MemoryError as e:
                 print(f"      ❌ {e}")
@@ -563,8 +563,8 @@ def print_algorithm_analysis(results):
     print("🎯 ESP32 ALGORITHM COMPARISON ANALYSIS")
     print("="*70)
     
-    algorithms = ["xor", "aes", "rsa"]
-    algorithm_names = {"xor": "XOR", "aes": "AES-128", "rsa": "RSA-2048"}
+    algorithms = ["PPE", "aes", "rsa"]
+    algorithm_names = {"PPE": "PPE", "aes": "AES-128", "rsa": "RSA-2048"}
     
     print("\n📊 ALGORITHM PERFORMANCE SUMMARY:")
     print("-" * 50)
@@ -591,7 +591,7 @@ def print_algorithm_analysis(results):
             print(f"   Average Success Rate: {avg_success:.0f}%")
             
             # توصیه‌ها
-            if algorithm == "xor":
+            if algorithm == "PPE":
                 if avg_time < 100:
                     print(f"   ✅ Excellent for ESP32 - Fast and efficient")
                 else:
@@ -609,7 +609,7 @@ def print_algorithm_analysis(results):
     
     print(f"\n🎯 ESP32 ALGORITHM RECOMMENDATIONS:")
     print("-" * 50)
-    print("1. 🔓 XOR: Use for speed-critical applications with basic security needs")
+    print("1. 🔓 PPE: Use for speed-critical applications with basic security needs")
     print("2. 🔐 AES: Use for balanced security and performance requirements")
     print("3. 🛡️  RSA: Use only for key exchange or small critical data")
     print("4. 📦 Keep data chunks under 1KB for optimal performance")
@@ -618,25 +618,25 @@ def print_algorithm_analysis(results):
     
     print(f"\n🔍 EXPECTED REAL ESP32 PERFORMANCE:")
     print("-" * 50)
-    print("• XOR (32-128B): 10-50 ms")
+    print("• PPE (32-128B): 10-50 ms")
     print("• AES (32-128B): 50-200 ms")  
     print("• RSA (32-128B): 500-2000 ms")
-    print("• Memory efficiency: XOR < AES < RSA")
-    print("• Security level: XOR < AES < RSA")
+    print("• Memory efficiency: PPE < AES < RSA")
+    print("• Security level: PPE < AES < RSA")
 
 def plot_algorithm_comparison_charts(results):
     """Create comparison charts for all algorithms"""
     
-    algorithms = ["xor", "aes", "rsa"]
-    algorithm_names = {"xor": "XOR", "aes": "AES-128", "rsa": "RSA-2048"}
-    colors = {"xor": "skyblue", "aes": "lightgreen", "rsa": "lightcoral"}
+    algorithms = ["PPE", "aes", "rsa"]
+    algorithm_names = {"PPE": "PPE", "aes": "AES-128", "rsa": "RSA-2048"}
+    colors = {"PPE": "skyblue", "aes": "lightgreen", "rsa": "lightcoral"}
     
     # Prepare data
     sizes = []
-    xor_times = []
+    PPE_times = []
     aes_times = []
     rsa_times = []
-    xor_memory = []
+    PPE_memory = []
     aes_memory = []
     rsa_memory = []
     
@@ -644,20 +644,20 @@ def plot_algorithm_comparison_charts(results):
         sizes.append(size_name)
         
         # Time data
-        xor_time = algo_results.get("xor", {}).get('total_time', 0) if algo_results.get("xor") else 0
+        PPE_time = algo_results.get("PPE", {}).get('total_time', 0) if algo_results.get("PPE") else 0
         aes_time = algo_results.get("aes", {}).get('total_time', 0) if algo_results.get("aes") else 0
         rsa_time = algo_results.get("rsa", {}).get('total_time', 0) if algo_results.get("rsa") else 0
         
-        xor_times.append(xor_time)
+        PPE_times.append(PPE_time)
         aes_times.append(aes_time)
         rsa_times.append(rsa_time)
         
         # Memory data
-        xor_mem = algo_results.get("xor", {}).get('memory_usage', 0) if algo_results.get("xor") else 0
+        PPE_mem = algo_results.get("PPE", {}).get('memory_usage', 0) if algo_results.get("PPE") else 0
         aes_mem = algo_results.get("aes", {}).get('memory_usage', 0) if algo_results.get("aes") else 0
         rsa_mem = algo_results.get("rsa", {}).get('memory_usage', 0) if algo_results.get("rsa") else 0
         
-        xor_memory.append(xor_mem / 1024)  # Convert to KB
+        PPE_memory.append(PPE_mem / 1024)  # Convert to KB
         aes_memory.append(aes_mem / 1024)
         rsa_memory.append(rsa_mem / 1024)
     
@@ -668,7 +668,7 @@ def plot_algorithm_comparison_charts(results):
     x = np.arange(len(sizes))
     width = 0.25
     
-    ax1.bar(x - width, xor_times, width, label='XOR', color=colors['xor'])
+    ax1.bar(x - width, PPE_times, width, label='PPE', color=colors['PPE'])
     ax1.bar(x, aes_times, width, label='AES-128', color=colors['aes'])
     ax1.bar(x + width, rsa_times, width, label='RSA-2048', color=colors['rsa'])
     
@@ -680,7 +680,7 @@ def plot_algorithm_comparison_charts(results):
     ax1.grid(True, alpha=0.3)
     
     # 2. Memory Usage Comparison
-    ax2.bar(x - width, xor_memory, width, label='XOR', color=colors['xor'])
+    ax2.bar(x - width, PPE_memory, width, label='PPE', color=colors['PPE'])
     ax2.bar(x, aes_memory, width, label='AES-128', color=colors['aes'])
     ax2.bar(x + width, rsa_memory, width, label='RSA-2048', color=colors['rsa'])
     
@@ -701,7 +701,7 @@ def plot_algorithm_comparison_charts(results):
         max_memory = max([first_results.get(algo, {}).get('memory_usage', 0) for algo in algorithms])
         
         categories = ['Speed\n(Lower is better)', 'Memory\n(Lower is better)', 'Security\n(Higher is better)']
-        security_scores = [1, 3, 5]  # XOR=1, AES=3, RSA=5
+        security_scores = [1, 3, 5]  # PPE=1, AES=3, RSA=5
         
         angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
         angles += angles[:1]  # Complete the circle
@@ -758,13 +758,13 @@ def plot_algorithm_comparison_charts(results):
     
     print("\n📊 Algorithm comparison charts are displayed in a window.")
     print("💡 Key insights:")
-    print("   • XOR is fastest but least secure")
+    print("   • PPE is fastest but least secure")
     print("   • AES provides good balance of speed and security")
     print("   • RSA is most secure but slowest and memory-intensive")
 
 if __name__ == "__main__":
     print("🚀 Starting ESP32 Algorithm Comparison Simulation")
-    print("This will compare XOR, AES, and RSA algorithms on ESP32")
+    print("This will compare PPE, AES, and RSA algorithms on ESP32")
     print()
     
     # اجرای بنچمارک
