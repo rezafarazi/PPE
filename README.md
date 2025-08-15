@@ -23,16 +23,64 @@ A high-performance, parallel processing encryption system that significantly out
 
 ```text
 PPE/
-  ├─ src/
-  │  ├─ Back/
-  │  │  ├─ cpp/                 # C/C++ projects and examples
-  │  │  └─ AllEncriptionAlgorithms/ (Java multi-module playground)
-  │  ├─ java/
-  │  │  └─ PPE/                  # Java library and demos (Maven)
-  │  ├─ MicroPython(vittascience)/*  # MicroPython examples for ESP32
-  │  ├─ PPETimeSyncer/           # Helper (e.g., PHP endpoint)
-  │  └─ Python/*                 # Python SDK
-  └─ README.md                   # This file
+├── src/
+│   ├── Back/
+│   │   ├── AllEncriptionAlgorithms/    # Java Implementation
+│   │   │   ├── All/
+│   │   │   │   ├── pom.xml
+│   │   │   │   ├── src/
+│   │   │   │   │   ├── main/          # Main implementation
+│   │   │   │   │   └── test/          # Unit tests
+│   │   │   └── README.md
+│   │   │
+│   │   ├── cpp/                        # C++ Implementation
+│   │   │   ├── Latest_PPE/
+│   │   │   │   ├── AES.cpp            # AES implementation
+│   │   │   │   ├── AES.h
+│   │   │   │   ├── main.cpp
+│   │   │   │   ├── SingleCore.cpp
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── PPE/
+│   │   │       └── PPE/               # Core PPE implementation
+│   │   │
+│   │   ├── JNI/                       # Java Native Interface
+│   │   │   ├── CPP/                   # C++ bindings
+│   │   │   │   ├── PPE.cpp
+│   │   │   │   ├── PPE.dll
+│   │   │   │   └── PPELib.h
+│   │   │   └── Java/                  # Java bindings
+│   │   │       └── JNITest/
+│   │   │
+│   │   └── Python/                    # Python Implementation
+│   │       └── PPE/
+│   │           └── PPE.py
+│   │
+│   ├── MicroPython/                   # ESP32 Implementation
+│   │   ├── main.py                    # Main ESP32 code
+│   │   ├── PPE_Arduino.ino           # Arduino specific code
+│   │   └── esp32_cam_mpy.bin         # ESP32 firmware
+│   │
+│   ├── PPETimeSyncer/                # Time Synchronization
+│   │   └── index.php                 # PHP endpoint
+│   │
+│   ├── Python/                       # Python SDK
+│   │   └── PPE/
+│   │       └── PPE.py               # Core Python implementation
+│   │
+│   └── PythonSimulate/              # Simulation & Testing
+│       ├── sim.py
+│       ├── simfa.py
+│       └── Simulate.py
+│
+├── docs/                            # Documentation
+│   └── images/                      # Performance charts & diagrams
+│
+├── tests/                          # Test suites
+│   ├── benchmark/                  # Performance tests
+│   └── unit/                      # Unit tests
+│
+├── LICENSE                        # MIT License
+└── README.md                     # Project documentation
 ```
 
 Note: Some experimental scripts used during benchmarking may no longer be present, but the results (charts/tables) are preserved below.
