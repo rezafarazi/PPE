@@ -1,6 +1,5 @@
-from Crypto.Cipher import AES
+from Crypto.Cipher import ChaCha20
 from Crypto.Random import get_random_bytes
-from Crypto.Util.Padding import pad, unpad
 import base64
 import time
 import re
@@ -84,42 +83,50 @@ def get_current_time_key(salt):
         num_b = keybasechar[i + 1]
 
         add_num = int(num_a + num_b)
-        key_char = chr(add_num)
+        # Ensure the number is within valid ASCII range (32-126)
+        key_char = chr((add_num % 95) + 32)
         key += key_char
 
     key = salt + key
-    key = key[:16]
+    key = key[:32]  # ChaCha20 requires 32-byte key
     result = base64.b64encode(key.encode()).decode()
     return result
 
 
 def get_key(key_str):
-    # Ensure the key is 24 characters long
-    key_str = key_str.ljust(16)[:16]
+    # Ensure the key is 32 characters long for ChaCha20
+    key_str = key_str.ljust(32)[:32]
     return key_str
 
 
 # Encrypt function
 def single_core_encrypt(data, key_str):
-    key = key_str[0:16]
-    # key = byte_data.decode('utf-8')
-
-    cipher = AES.new(key.encode('utf-8'), AES.MODE_ECB)
-    # cipher = AES.new(key, AES.MODE_ECB)
-    ct_bytes = cipher.encrypt(pad(data.encode('utf-8'), AES.block_size))
-    ct = base64.b64encode(ct_bytes).decode('utf-8')
+    key = key_str[0:32]  # ChaCha20 uses 32-byte keys
+    
+    # Generate a random 12-byte nonce for ChaCha20
+    nonce = get_random_bytes(12)
+    cipher = ChaCha20.new(key=key.encode('utf-8'), nonce=nonce)
+    ct_bytes = cipher.encrypt(data.encode('utf-8'))
+    
+    # Combine nonce and ciphertext, then encode
+    combined = nonce + ct_bytes
+    ct = base64.b64encode(combined).decode('utf-8')
     return ct
 
 
 # Decrypt function
 def single_core_decrypt(enc_data, key_str):
-    key = key_str[0:16]
-    # key = byte_data.decode('utf-8')
-
-    ct = base64.b64decode(enc_data)
-    cipher = AES.new(key.encode('utf-8'), AES.MODE_ECB)
-    # cipher = AES.new(key, AES.MODE_ECB)
-    pt = unpad(cipher.decrypt(ct), AES.block_size)
+    key = key_str[0:32]  # ChaCha20 uses 32-byte keys
+    
+    # Decode the base64 data
+    combined = base64.b64decode(enc_data)
+    
+    # Extract nonce (first 12 bytes) and ciphertext (remaining bytes)
+    nonce = combined[:12]
+    ct_bytes = combined[12:]
+    
+    cipher = ChaCha20.new(key=key.encode('utf-8'), nonce=nonce)
+    pt = cipher.decrypt(ct_bytes)
     return pt.decode('utf-8')
 
 
@@ -150,7 +157,7 @@ def multi_core_decrypt(data, key_str):
     Ciphers_str = Ciphers.decode('utf-8')
     main_cipher = Ciphers_str.split('~|~')
 
-    # Get parallel processing satrt
+    # Get parallel processing start
     with mp.Pool(1) as pool:
         Left_Text = single_core_decrypt(main_cipher[0], key_str)
 
@@ -161,27 +168,18 @@ def multi_core_decrypt(data, key_str):
     return Left_Text + Right_Text
 
 
+# Main functions for call PPE
 
-
-
-
-#Main functions for call PPE
-
-def PPE(inp,salt):
+def PPE(inp, salt):
     key_bytes = base64.b64encode(get_current_time_key(salt).encode('utf-8'))
     key = key_bytes.decode('utf-8')
     return multi_core_encrypt(inp, key)
 
 
-def PPD(inp,salt):
+def PPD(inp, salt):
     key_bytes = base64.b64encode(get_current_time_key(salt).encode('utf-8'))
     key = key_bytes.decode('utf-8')
     return multi_core_decrypt(inp, key)
-
-
-
-
-
 
 
 # main run
