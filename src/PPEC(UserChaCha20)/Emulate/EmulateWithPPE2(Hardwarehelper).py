@@ -132,9 +132,6 @@ class EncryptionBenchmark:
             gc.collect()  # Clean memory before test
             
             # Measure encryption
-            start_power_monitor = threading.Thread(target=self._monitor_power_thread, args=(1,))
-            power_samples = []
-            
             start_time = time.perf_counter()
             start_memory = psutil.Process().memory_info().rss
             

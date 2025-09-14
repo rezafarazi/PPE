@@ -1,0 +1,22 @@
+PPE vs PPEC Benchmark Results
+========================================
+Generated: 2025-09-14 09:47:45.071062
+System: Intel i7-13650HX (ESP32-Constrained)
+Data Sizes: [500]
+Iterations: 20
+Salt: benchmark
+
+Algorithm: PPE (AES)
+Data Size: 500 bytes
+Avg Time: 1.95 ms
+Memory: 0.0 KB
+Power: 18.2 W
+Throughput: 501.0 KB/s
+------------------------------
+Algorithm: PPEC (ChaCha20)
+Data Size: 500 bytes
+Avg Time: 1.11 ms
+Memory: 1.0 KB
+Power: 18.4 W
+Throughput: 883.8 KB/s
+------------------------------
